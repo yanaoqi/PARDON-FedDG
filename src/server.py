@@ -167,7 +167,13 @@ class FedAvg(object):
                 if isinstance(meta_batch, list):
                     meta_batch = meta_batch[0]
                 data, labels = data.to(self.device), labels.to(self.device)
-                prediction = self.model(data)
+                if self.hparam.get("client_method") == "FedSR":
+                    # FedSR featurizer outputs [mu, sigma] concatenated; classifier takes mu only.
+                    feature_params = self.featurizer(data)
+                    z_dim = int(feature_params.shape[-1] / 2)
+                    prediction = self.classifier(feature_params[..., :z_dim])
+                else:
+                    prediction = self.model(data)
                 
                 if self.ds_bundle.is_classification:
                     prediction = torch.argmax(prediction, dim=-1)
@@ -794,7 +800,13 @@ class CCST(FedAvg):
             for batch in tqdm(dataloader):
                 data, labels = batch[0], batch[1]
                 data, labels = data.to(self.device), labels.to(self.device)
-                prediction = self.model(data)
+                if self.hparam.get("client_method") == "FedSR":
+                    # FedSR featurizer outputs [mu, sigma] concatenated; classifier takes mu only.
+                    feature_params = self.featurizer(data)
+                    z_dim = int(feature_params.shape[-1] / 2)
+                    prediction = self.classifier(feature_params[..., :z_dim])
+                else:
+                    prediction = self.model(data)
                 
                 if self.ds_bundle.is_classification:
                     prediction = torch.argmax(prediction, dim=-1)
