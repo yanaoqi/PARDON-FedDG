@@ -5,3 +5,4 @@ wilds>=2.0
 wandb>=0.15
 tqdm>=4.65
 pynndescent>=0.5.11
+termcolor>=2.0
