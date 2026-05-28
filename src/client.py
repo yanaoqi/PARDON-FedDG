@@ -282,7 +282,9 @@ class FedSR(ERM):
         super().__init__(client_id, device, dataset, ds_bundle, hparam)
         self.l2_regularizer = hparam['hparam1']
         self.cmi_regularizer = hparam['hparam2']
-        self.fp = "local/scratch/a/bai116/tmp/fedsr_ref_exp{}_client_{}.pt".format(self.exp_id, self.client_id)
+        tmp_dir = os.path.join(hparam['data_path'], "tmp")
+        os.makedirs(tmp_dir, exist_ok=True)
+        self.fp = os.path.join(tmp_dir, "fedsr_ref_exp{}_client_{}.pt".format(self.exp_id, self.client_id))
     
     def setup_model(self, featurizer, classifier):
         super().setup_model(featurizer, classifier)
